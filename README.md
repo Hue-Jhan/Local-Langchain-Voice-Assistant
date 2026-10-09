@@ -11,6 +11,7 @@ Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** 
   - [1 — Structure & Workflow](#1---structure--workflow)
   - [2 — Testing](#2---testing)
 
+##### right click and open img in a new tab to read
 
 <img src="media/localai2.png" width="900" />
 
