@@ -4,7 +4,7 @@ Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** 
 
 # 🤖 LLM
 
-### - LangChain
+### 1 - LangChain
 
 LangChain supplies the model client (`ChatOllama`) and the message types, LangGraph supplies the shape of a turn and the memory. The graph is small on purpose:
 
@@ -26,7 +26,7 @@ The system prompt says to never act like a polite AI (funny hehe) and to keep re
 | `lama3ab` `qwen3ab` `qwen7ab` | uncensored builds | Tool calls come out as plain text and don't work properly|
 
 
-### Tools
+### 2 - Tools
 
 Two tools, `tools/clock.py` and `tools/web.py`, plus `tools/rag.py` as an empty placeholder for searching your own documents later, each tool file holds both the tool and the words that call for it, so everything about the clock is in one place.
 
@@ -38,7 +38,7 @@ How a tool gets chosen is set by one line, `[tools] mode` in `config.toml`:
 - **`"router"`** (the default) matches your wording against patterns, then runs the tool itself and hands the result to the model, nothing is added to the prompt, so chat stays fast, however it's not as precise as a custom machine learnign script or a mini llm that only checks which tools to call.
 - **`"model"`** gives every tool to the model on every message and lets it decide. This is the option to switch if you have a powerful machine and can fit a smarter model.
 
-### Efficiency
+### 3 - Efficiency
 
 Answers in <1s, however a web search requires 15 to 20 seconds, nearly all of that the computer reading the results. On a Raspberry Pi 5, maybe three to five times slower.
 
@@ -48,9 +48,9 @@ A better model would fix most of this projects' issues by: set `[tools] mode = "
 
 I built this project just because Hermes agent couldn't connect to local ollama models as it injects into the system prompt thousends of lines of tools, instructions, and other stuff (even if all plugins and skills are disabled). This project instead only injects the bare necessary but it's way dumber and less capable in terms of agentics skills.
 
-# Code
+# 🖥️ Code
 
-### Start & config
+### 0 - Start & config
 
 ```bash
 pip install --user -e .        # pyproject.toml is the only list of dependencies
@@ -78,7 +78,7 @@ Full-screen interface: **F2** voice, **F3** talk (doesnt work), **Ctrl+C** stop 
 
 `-gate wake` listens constantly for a wake word instead, plain cli interface only, the wake words were chosen by testing, not taste: `ciao assistente` and `hey assistant`, but you can modify them. I suggest using simple ones like "Open". 
 
-### Structure & Workflow
+### 1 - Structure & Workflow
 
 ```
 config.toml  every setting, in the top folder so it is easy to find
@@ -108,7 +108,7 @@ you type or speak
 
 History is saved per thread in `data/sessions.db` and survives quitting (`-thread <name>` for a separate one), also the grey line after an answer, `1.2s · 46 tok · 14.4 tok/s`, times the answer itself, waiting for the web search separately.
 
-### Testing
+### 2 - Testing
 
 ```bash
 python analysis/tester.py logic              # fast, no model needed
