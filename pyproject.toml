@@ -1,0 +1,30 @@
+# The single source of dependencies. `pip install --user -e .` installs them and
+# provides the `langai` command; `python main.py` works without installing.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langai"
+version = "2.0"
+description = "Local terminal assistant: Ollama, Piper TTS, Vosk speech input, web search"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=1.2",
+    "langgraph-checkpoint-sqlite>=3.1",
+    "langchain-core>=1.6",
+    "langchain-ollama>=1.1",
+    "ddgs>=9.16",
+    "piper-tts>=1.8",
+    "vosk>=0.3.45",
+    "sounddevice>=0.5",
+    "textual>=8.0",
+]
+
+[project.scripts]
+langai = "langai.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["langai*"]

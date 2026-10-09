@@ -1,0 +1,54 @@
+# langai settings. Command-line flags override everything here.
+
+[ui]
+mode = "tui"        # "tui" or "cli"
+
+[model]
+alias = "qwen25"
+temperature = 0.7
+max_tokens = 500    # 0 = unlimited
+keep_alive = ""     # empty = ollama default (unloads after 5 idle minutes)
+
+[voice]
+enabled = false
+auto = true         # read each answer in the voice matching its language
+voice_id = 1        # 0 Riccardo IT, 1 Ryan US, 2 Jenny UK; used when auto is off
+
+[ear]
+enabled = false
+gate = "push"       # "push" or "wake"
+language = "it"     # "it" or "en" - chooses the vosk model
+model = ""          # explicit vosk model path, overrides language
+device = -1         # microphone index, -1 = system default
+
+[memory]
+persist = true
+path = "data/sessions.db"
+thread = "main"
+# how many recent messages stay in view. The whole thread is kept on disk. The window is
+# pinned in place and only grows, because a window that slides forward every turn made
+# ollama re-read the whole prompt every turn - 0.24s against 3.4s a turn. It is re-pinned
+# at three times this number, or during a turn that is already fetching something.
+window = 16
+
+[router]
+# a rule layer decides what each turn needs; see router.py
+enabled = true
+
+[tools]
+# "router": never send tool schemas. The rules in tools/*.py match your wording and run
+#           the tool for the model. Deterministic, and chat turns stay around a second.
+# "model":  send every tool on every turn and let the model decide. This is the switch
+#           to flip once a smarter model fits on the machine: no keywords, no hardcoded
+#           rules, the model handles everything. Tested on qwen2.5:3b, which is not up
+#           to it - it reads the clock when told "call the now tool" but answers "what
+#           time is it" with a joke, and it costs ~160 units of prompt on every message.
+mode = "router"
+
+[paths]
+# relative to the project directory, so the project can be moved or shared
+voices = "voices"
+models = "models"
+
+[log]
+path = ""           # e.g. "langai.log"; empty = no logging
