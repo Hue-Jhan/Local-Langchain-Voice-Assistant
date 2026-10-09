@@ -1,6 +1,6 @@
 # Local LangChain Voice Assistant
 
-Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** to connect a local Ollama model to a few skills: web search, time/clock, speaking its answers, and listening through the microphone. 90% Vibecoded w
+Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** to connect a local Ollama model to a few skills: web search, time/clock, speaking its answers, and listening through the microphone. ~90% Vibecoded with opus5.
 
 # 🤖 LLM
 
@@ -74,20 +74,11 @@ Needs `ollama` running, plus `piper-tts` and `ffplay` on your `PATH` for speech.
 Full-screen interface: **F2** voice, **F3** talk (doesnt work), **Ctrl+C** stop whatever is happening, **Ctrl+Q** quit, **Ctrl+L** clear. A spinner shows what it is doing (*booting up model*,
 *thinking*, *calling search tool*, *listening*) and an indicator moves while it speaks. Talking does not block typing, and a new answer cuts off the previous one.
 
-`-ear` turns on the microphone; recognition is Vosk, offline, `-lang it` (default) or
-`-lang en`. **One language at a time**, because a Vosk model only knows one, so `-lang`
-picks which language you are speaking. The reply comes back in the same language, and the
-voice follows it: `[voice] auto` reads Italian answers in Riccardo and English ones in
-Ryan, working it out from the words. The question counts as well as the answer, so a clock
-reply, which is English whatever you asked in, is still read in the language you asked.
-`/voice <id>` fixes one voice and turns that off, `/voice auto` turns it back on. **Press to talk** is the default: Enter on an empty line in the plain
-interface, **F3** in the full-screen one, once to start and again to stop, because a
-terminal cannot tell when you release a key. What you said lands in the input box so you
-can correct it. **`-gate wake`** listens constantly for a wake word instead, plain
-interface only. The wake words were chosen by testing, not taste: `ciao assistente` and
-`hey assistant`. It never listens while the assistant is talking.
+`-ear` turns on the microphone; recognition is Vosk, offline, `-lang it` (default) or `-lang en`. The reply comes back in the same language, and the voice follows it: `[voice] auto` reads Italian answers in Riccardo and English ones in Ryan, working it out from the words. 
 
-### Structure
+`-gate wake` listens constantly for a wake word instead, plain cli interface only, the wake words were chosen by testing, not taste: `ciao assistente` and `hey assistant`, but you can modify them. I suggest using simple ones like "Open". 
+
+### Structure & Workflow
 
 ```
 config.toml  every setting, in the top folder so it is easy to find
@@ -101,18 +92,7 @@ langai/ __main__.py  options, then one of the two interfaces
         ui/  tui.py (full screen) · cli.py (plain) · term.py (colours)
 ```
 
-`langai/` is a package rather than a bare `src/` because Python needs a name to import by,
-and because `langai` installs as a command.
-
-Four seams are meant to be swapped. A **rule** looks at your message and either stays quiet
-or returns a decision, first one wins; a tool's rules live in its own file and `RULES` in
-`router.py` sets the order. In **search**, `BACKEND` fetches and `FORMATTER` lays out.
-In **voice**, `POLICY` decides what gets spoken. In **ear**, `GATES` decide whether speech
-was meant for the assistant; they are objects because they remember things, and they see
-the recording as well as the words, so a future gate could recognise *who* is speaking.
-That is where "only these people may give commands" would go.
-
-### Workflow of a message
+Workflow of the message:
 
 ```
 you type or speak
@@ -126,10 +106,7 @@ you type or speak
             └─ streams out word by word, read aloud if voice is on
 ```
 
-`Session.run` yields `token`, `tool` and `stats` events, so turn logic is written once and
-both interfaces only display it. History is saved per thread in `data/sessions.db` and
-survives quitting (`-thread <name>` for a separate one). The grey line after an answer,
-`1.2s · 46 tok · 14.4 tok/s`, times it, counting waits for the web separately.
+History is saved per thread in `data/sessions.db` and survives quitting (`-thread <name>` for a separate one), also the grey line after an answer, `1.2s · 46 tok · 14.4 tok/s`, times the answer itself, waiting for the web search separately.
 
 ### Testing
 
@@ -140,9 +117,4 @@ python analysis/tester.py tui                # starts the interface invisibly an
 python analysis/tester.py models qwen25 -n 4 # which model picks tools correctly
 ```
 
-The speech test speaks with Piper and listens back through Vosk, scoring words returned
-rather than demanding a perfect match. The interface test has caught a startup crash and a
-broken Ctrl+C. One known rough edge the tests do not cover: `qwen2.5:3b` still ends some
-answers with a question however firmly it is told not to.
-
-`TODO.md` has the open questions. `CLAUDE.md` is a summary for starting a fresh chat.
+The speech test speaks with Piper and listens back through Vosk, scoring words returned rather than demanding a perfect match. 
