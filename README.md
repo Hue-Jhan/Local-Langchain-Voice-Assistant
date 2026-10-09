@@ -1,44 +1,33 @@
 # Local LangChain Voice Assistant
 
-A chat assistant that runs entirely on your own machine. **LangChain** and **LangGraph**
-wire a local Ollama model to a few abilities: web search, the clock, speaking its answers,
-and listening through the microphone. Nothing leaves the machine and there are no API keys.
+Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** to connect a local Ollama model to a few skills: web search, time/clock, speaking its answers, and listening through the microphone.
 
-# LLM
+# 🤖 LLM
 
-### LangChain
+### 1) LangChain
 
-LangChain supplies the model client (`ChatOllama`) and the message types. LangGraph
-supplies the shape of a turn and the memory. The graph is small on purpose:
+LangChain supplies the model client (`ChatOllama`) and the message types, LangGraph supplies the shape of a turn and the memory. The graph is small on purpose:
 
 ```
 START -> agent -> (tool call?) -> tools -> agent -> ... -> END
                   (no call?)  -> END
 ```
 
-`agent.py` builds it. The agent node sends the system prompt plus the recent messages to
-Ollama; `tools_condition` sends the answer to the tool node if it contains a tool call,
-and the tool node loops back so the model writes the final reply itself rather than
-leaving raw tool output on screen. A `SqliteSaver` checkpointer stores every thread in
-`data/sessions.db`, so conversations survive quitting.
+The agent node sends the system prompt plus the recent messages to Ollama; `tools_condition` sends the answer to the tool node if it contains a tool call, and the tool node loops back so the model writes the final reply itself rather than leaving raw tool output on screen. A `SqliteSaver` checkpointer stores every thread in `data/sessions.db`, so conversations survive quitting.
 
-The system prompt is three lines: never act like a polite AI, keep replies short and blunt
-(two sentences unless more is asked for), and answer in the language the question came in.
-That last line matters because the microphone and the voice both work in one language at a
-time, and the reply has to match. Keeping the whole thing short matters too, since it is
-re-read on every message.
+The system prompt is three lines: "never act like a polite AI, keep replies short and blunt", (two sentences unless more is asked for), and answer in the language the question came in.
+That last line matters because the microphone and the voice both work in one language at a time, and the reply has to match. Keeping the whole thing short matters too, since it is
+re-read on every message and this project is meant to be fast and lightweight.
 
 | Name | Model | Notes |
 |---|---|---|
 | `qwen25` | `qwen2.5:3b` | **The default, and the best of these.** |
 | `qwen4` | `qwen3:4b` | Thinks before answering, which costs minutes here |
-| `granite` | `granite3.3:2b` | Says it supports tools but never calls them |
-| `lama3` | `llama3.2:3b` | Unreliable: skips searches, malformed arguments |
+| `granite` | `granite3.3:2b` | Says it supports tools but never calls them (stupid)|
+| `lama3` | `llama3.2:3b` | Unreliable: skips searches, malformed arguments, but good at conversation |
 | `lama3ab` `qwen3ab` `qwen7ab` | uncensored builds | Tool calls come out as plain text |
 
-The uncensored ("abliterated") builds lost the structured output that tool calling needs.
-Fine for plain chat; anything with a known problem warns you at startup. Only one model
-fits in memory at a time, so `/model` and the benchmark stop the previous one for you.
+The uncensored ("abliterated") models lost the structured output that tool calling needs. Also only one model fits in memory at a time, that's why the tools part is kinda lame.
 
 ### Tools
 
