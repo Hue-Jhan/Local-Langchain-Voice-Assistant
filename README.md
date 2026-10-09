@@ -2,8 +2,6 @@
 
 Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** to connect a local Ollama model to a few skills: web search, time/clock, speaking its answers, and listening through the microphone. ~90% Vibecoded with opus5.
 
-<img align="right" src="media/localai2.png" width="780" />
-
 - [🤖 LLM](#-llm)
   - [1 — LangChain](#1---langchain)
   - [2 — Tools](#2---tools)
@@ -12,6 +10,9 @@ Lightweight local LLM voice assistant that uses **LangChain** and **LangGraph** 
   - [0 — Start & Config](#0---start--config)
   - [1 — Structure & Workflow](#1---structure--workflow)
   - [2 — Testing](#2---testing)
+
+
+<img src="media/localai2.png" width="900" />
 
 <a id="llm"></a>
 # 🤖 LLM
